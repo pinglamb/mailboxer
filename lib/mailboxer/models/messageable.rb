@@ -61,6 +61,15 @@ module Mailboxer
         return message.deliver false,sanitize_text
       end
 
+      def send_message_about(recipients, msg_body, subject, referable, sanitize_text=true, attachment=nil)
+        convo = Conversation.new({:subject => subject, :referable => referable})
+        message = messages.new({:body => msg_body, :subject => subject, :attachment => attachment})
+        message.conversation = convo
+        message.recipients = recipients.is_a?(Array) ? recipients : [recipients]
+        message.recipients = message.recipients.uniq
+        return message.deliver false,sanitize_text
+      end
+
       #Basic reply method. USE NOT RECOMENDED.
       #Use reply_to_sender, reply_to_all and reply_to_conversation instead.
       def reply(conversation, recipients, reply_body, subject=nil, sanitize_text=true, attachment=nil)
